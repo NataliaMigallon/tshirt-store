@@ -1,10 +1,11 @@
 "use strict";
 
 let products = [];
+let cart = [];
 
 // get data from api
 const getApiData = () => {
-  fetch("//beta.adalab.es/ejercicios-extra/api/eshop/v2/cart.json") // go to info
+  fetch("./api/data.json") // go to info
     .then((response) => response.json()) // process info
     .then((data) => {
       products = data.cart.items; // extract only necessary info and save
@@ -23,7 +24,7 @@ const getProductHtmlCode = (product) => {
   htmlCode += `<img src="${product.imageUrl}" class=card__img" alt="Producto: ${product.name}">`;
   htmlCode += `<h3 class="card__title">${product.name}</h3>`;
   htmlCode += `<p class="card__description">${product.price}</p>`;
-  htmlCode += `<button class="js-add-product card__btn">Añadir a la cesta</button>`;
+  htmlCode += `<button class="js-add-product card__btn" data-id="${product.id}">Añadir a la cesta</button>`;
   htmlCode += `</article>`;
   return htmlCode;
 };
@@ -34,7 +35,7 @@ const paintProducts = () => {
     productsCode += getProductHtmlCode(product);
   }
   productsElement.innerHTML = productsCode;
-  listenAddProductsBtn(); // buena práctica el escuchar eventos dentro de una función para pintar
+  listenAddProductsBtn(); // good practice to listen events inside a function to paint
 };
 
 //listen products
@@ -46,8 +47,25 @@ const listenAddProductsBtn = () => {
   }
 };
 
-const addProduct = () => {
-  //console.log("han clickado en un producto");
+const addProduct = (ev) => {
+  console.log(products, ev.target.dataset.id);
+  const clickedID = ev.target.dataset.id;
+
+  let foundProduct;
+  for (const product of products) {
+    if (product.id === clickedID) {
+      foundProduct = product; // save the product inside foundProduct
+    }
+  }
+  //console.log("Bingo", foundProduct);
+
+  cart.push({
+    id: foundProduct.id,
+    name: foundProduct.name,
+    price: foundProduct.price,
+    quantity: 1,
+  });
+  console.log("Cesta", cart);
 };
 
 // start app
